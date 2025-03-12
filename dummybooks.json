@@ -1,0 +1,16 @@
+[
+  {
+    "id": "f2b3a7d9-4c6e-8f1d-2e9a-5b7c6d4f8a1c",
+    "title": "Educated",
+    "author": "Tara Westover",
+    "genre": "Non-fiction",
+    "rating": 5,
+    "totalCopies": 60,
+    "availableCopies": 40,
+    "description": "A memoir about a woman who grows up in a strict and abusive household in rural Idaho but eventually escapes through education.",
+    "coverColor": "#e67e22",
+    "coverUrl": "https://i.pinimg.com/736x/52/8e/a8/528ea8bc8bc6e8e9cd9c87333e3b7011.jpg",
+    "videoUrl": "https://www.youtube.com/watch?v=miu02SDCtgk",
+    "summary": "An inspiring true story of resilience, learning, and personal transformation."
+  }
+]
