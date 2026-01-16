@@ -17,9 +17,17 @@ export const signInWithCredentials = async (
   const { email, password } = params;
 
   const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
-  const { success } = await ratelimit.limit(ip);
 
-  if (!success) return redirect("/too-fast");
+  // ✅ FAIL-OPEN rate limiting
+  try {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+  return { success: false, error: "TOO_FAST" };
+}
+
+  } catch (err) {
+    console.error("Rate limit failed, allowing sign-in:", err);
+  }
 
   try {
     const result = await signIn("credentials", {
@@ -34,18 +42,27 @@ export const signInWithCredentials = async (
 
     return { success: true };
   } catch (error) {
-    console.log(error, "Signin error");
-    return { success: false, error: "Signin error" };
+    console.error("Wrong Password", error);
+    return { success: false, error: "Wrong Password" };
   }
 };
+
 
 export const signUp = async (params: AuthCredentials) => {
   const { fullName, email, universityId, password, universityCard } = params;
 
   const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
-  const { success } = await ratelimit.limit(ip);
 
-  if (!success) return redirect("/too-fast");
+  // ✅ FAIL-OPEN rate limiting
+  try {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) 
+        return { success: false, error: "TOO_FAST" };
+
+
+  } catch (err) {
+    console.error("Rate limit failed, allowing signup:", err);
+  }
 
   const existingUser = await db
     .select()
@@ -68,19 +85,11 @@ export const signUp = async (params: AuthCredentials) => {
       universityCard,
     });
 
-    // await workflowClient.trigger({
-    //   url: `${config.env.prodApiEndpoint}/api/workflows/onboarding`,
-    //   body: {
-    //     email,
-    //     fullName,
-    //   },
-    // });
-
     await signInWithCredentials({ email, password });
 
     return { success: true };
   } catch (error) {
-    console.log(error, "Signup error");
+    console.error("Signup error:", error);
     return { success: false, error: "Signup error" };
   }
 };

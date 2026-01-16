@@ -3,9 +3,9 @@ import redis from "@/database/redis";
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.fixedWindow(5, "1m"),
+  limiter: Ratelimit.slidingWindow(3, "10 s"), // aggressive for auth
   analytics: true,
-  prefix: "@upstash/ratelimit",
+  prefix: "library-auth",
 });
 
 export default ratelimit;
