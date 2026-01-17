@@ -1,5 +1,4 @@
 import NextAuth, { User } from "next-auth";
-import { compare } from "bcryptjs";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
@@ -24,6 +23,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (user.length === 0) return null;
 
+        // Lazy-load bcryptjs only when needed (in Node.js runtime, not Edge)
+        const { compare } = await import("bcryptjs");
         const isPasswordValid = await compare(
           credentials.password.toString(),
           user[0].password,
