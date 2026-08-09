@@ -50,6 +50,7 @@ const AuthForm = <T extends FieldValues>({
   });
 
   const handleSubmit: SubmitHandler<T> = async (data) => {
+  try {
     const result = await onSubmit(data);
 
     if (result.success) {
@@ -59,16 +60,29 @@ const AuthForm = <T extends FieldValues>({
           ? "You have successfully signed in."
           : "You have successfully signed up.",
       });
-
       router.push("/");
-    } else {
-      toast({
-        title: `Error ${isSignIn ? "signing in" : "signing up"}`,
-        description: result.error ?? "An error occurred.",
-        variant: "destructive",
-      });
+      return;
     }
-  };
+
+    if (result.error === "TOO_FAST") {
+      router.push("/too-fast");
+      return;
+    }
+
+    toast({
+      title: `Error ${isSignIn ? "signing in" : "signing up"}`,
+      description: result.error ?? "An error occurred.",
+      variant: "destructive",
+    });
+  } catch (error) {
+    console.error("Auth request failed:", error);
+    toast({
+      title: "Something went wrong",
+      description: "Couldn't reach the server. Please try again.",
+      variant: "destructive",
+    });
+  }
+};
 
   return (
     <div className="flex flex-col gap-4">
